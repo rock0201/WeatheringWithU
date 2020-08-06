@@ -1,5 +1,6 @@
 package com.example.weatheringwithu.ui.place
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,7 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.weatheringwithu.MainActivity
 import com.example.weatheringwithu.R
+import com.example.weatheringwithu.ui.weather.WeatheringActivity
 import kotlinx.android.synthetic.main.fragment_place.*
 import androidx.core.widget.addTextChangedListener as addTextChangedListener
 
@@ -27,6 +30,17 @@ class PlaceFragement:Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        if(viewModel.isPlaceSaved()&&activity is MainActivity){
+            val place = viewModel.getSavedPlace()
+            val intent = Intent(context,WeatheringActivity::class.java).apply {
+                putExtra("location_lng",place.location.lng)
+                putExtra("location_lat",place.location.lat)
+                putExtra("place_name",place.name)
+            }
+            startActivity(intent)
+            activity?.finish()
+            return
+        }
         val layoutManager = LinearLayoutManager(activity)
         recyclerView.layoutManager = layoutManager
         adapter = PlaceAdapter(this,viewModel.placeList)

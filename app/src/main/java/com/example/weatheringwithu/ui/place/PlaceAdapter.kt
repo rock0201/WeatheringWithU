@@ -11,9 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weatheringwithu.R
 import com.example.weatheringwithu.logic.model.Place
 import com.example.weatheringwithu.ui.weather.WeatheringActivity
+import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.place_item.view.*
 
-class PlaceAdapter(private val fragement:Fragment,private val placeList:List<Place>) :RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
+class PlaceAdapter(private val fragement:PlaceFragement,private val placeList:List<Place>) :RecyclerView.Adapter<PlaceAdapter.ViewHolder>() {
     class ViewHolder(val view : View) : RecyclerView.ViewHolder(view){
         val placeName:TextView = view.findViewById(R.id.placeName)
         val placeAdress:TextView = view.findViewById(R.id.placeAddress)
@@ -25,13 +26,24 @@ class PlaceAdapter(private val fragement:Fragment,private val placeList:List<Pla
         holder.itemView.setOnClickListener {
             val position = holder.adapterPosition
             val place = placeList[position]
-            val intent = Intent(parent.context,WeatheringActivity::class.java).apply {
-                putExtra("location_lng",place.location.lng)
-                putExtra("location_lat",place.location.lat)
-                putExtra("place_name",place.name)
+            val activity = fragement.activity
+            if (activity is WeatheringActivity){
+                activity.drawerLayout.closeDrawers()
+                activity.viewModel.locationLng = place.location.lng
+                activity.viewModel.locationLat = place.location.lat
+                activity.viewModel.placeName = place.name
+                activity.refreshWeather()
+            }else {
+                val intent = Intent(parent.context, WeatheringActivity::class.java).apply {
+                    putExtra("location_lng", place.location.lng)
+                    putExtra("location_lat", place.location.lat)
+                    putExtra("place_name", place.name)
+                }
+                fragement.viewModel.savePlace(place)
+                fragement.startActivity(intent)
+                fragement.activity?.finish()
             }
-            fragement.startActivity(intent)
-            Log.d("weather","coming1111")
+            fragement.viewModel.savePlace(place)
         }
         return holder
     }

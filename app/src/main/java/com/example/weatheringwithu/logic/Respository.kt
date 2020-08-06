@@ -2,6 +2,7 @@ package com.example.weatheringwithu.logic
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
+import com.example.weatheringwithu.logic.dao.PlaceDao
 import com.example.weatheringwithu.logic.model.Place
 import com.example.weatheringwithu.logic.model.Weather
 import com.example.weatheringwithu.logic.network.WeatheringWithUNetwork
@@ -60,4 +61,7 @@ private fun <T> fire(context: CoroutineContext, block: suspend () -> Result<T>) 
         }
         emit(result)
     }
+    fun savePlace(place:Place) = PlaceDao.savePlace(place)
+    fun getSavedPlace() = PlaceDao.getSavedPlace()
+    fun isPlaceSaved() = PlaceDao.isPlaceSaved()
 }
